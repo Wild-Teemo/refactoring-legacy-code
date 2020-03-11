@@ -15,6 +15,15 @@ public class WalletTransaction {
   private String orderId;
   private Long createdTimestamp;
   private Double amount;
+
+  public void setCreatedTimestamp(Long createdTimestamp) {
+    this.createdTimestamp = createdTimestamp;
+  }
+
+  public STATUS getStatus() {
+    return status;
+  }
+
   private STATUS status;
   private String walletTransactionId;
   private DistributedLock distributedLock;

@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatExceptionOfType;
 import static org.mockito.BDDMockito.given;
 
+import cn.xpbootcamp.legacy_code.enums.STATUS;
 import cn.xpbootcamp.legacy_code.service.WalletService;
 import cn.xpbootcamp.legacy_code.utils.DistributedLock;
 import java.util.UUID;
@@ -97,4 +98,105 @@ public class WalletTransactionTest {
         .isThrownBy(walletTransaction::execute);
   }
 
+  @Test
+  void should_return_true_when_execute_with_status_is_already_execute() throws InvalidTransactionException {
+    // given
+    String preAssignedId = "t_" + UUID.randomUUID().toString();
+    Long buyerId = 111L;
+    Long sellerId = 111L;
+    Long productId = 111L;
+    String orderId = UUID.randomUUID().toString();
+    Double amount = 11.1;
+
+    given(distributedLock.lock(preAssignedId)).willReturn(true);
+    given(walletService.moveMoney(preAssignedId, buyerId, sellerId, amount))
+        .willReturn(UUID.randomUUID().toString());
+
+    WalletTransaction walletTransaction =
+        new WalletTransaction(preAssignedId, buyerId, sellerId, productId, orderId, amount);
+    walletTransaction.setDistributedLock(distributedLock);
+    walletTransaction.setWalletService(walletService);
+    walletTransaction.execute();
+
+    // when
+    boolean executeResult = walletTransaction.execute();
+
+    // then
+    assertThat(executeResult).isTrue();
+  }
+
+  @Test
+  void should_return_false_when_transaction_distributed_lock_is_not_locked() throws InvalidTransactionException {
+    // given
+    String preAssignedId = "t_" + UUID.randomUUID().toString();
+    Long buyerId = 111L;
+    Long sellerId = 111L;
+    Long productId = 111L;
+    String orderId = UUID.randomUUID().toString();
+    Double amount = 11.1;
+    WalletTransaction walletTransaction =
+        new WalletTransaction(preAssignedId, buyerId, sellerId, productId, orderId, amount);
+
+    given(distributedLock.lock(preAssignedId)).willReturn(false);
+    walletTransaction.setDistributedLock(distributedLock);
+
+    // when
+    boolean executeResult = walletTransaction.execute();
+
+    // then
+    assertThat(executeResult).isFalse();
+  }
+
+  @Test
+  void should_return_false_and_status_is_expire_when_transaction_over_20_days()
+      throws InvalidTransactionException, NoSuchFieldException, IllegalAccessException {
+    // given
+    String preAssignedId = "t_" + UUID.randomUUID().toString();
+    Long buyerId = 111L;
+    Long sellerId = 111L;
+    Long productId = 111L;
+    String orderId = UUID.randomUUID().toString();
+    Double amount = 11.1;
+    WalletTransaction walletTransaction =
+        new WalletTransaction(preAssignedId, buyerId, sellerId, productId, orderId, amount);
+    given(distributedLock.lock(preAssignedId)).willReturn(true);
+
+    walletTransaction.setDistributedLock(distributedLock);
+    walletTransaction.setCreatedTimestamp(19L);
+
+    // when
+    boolean executeResult = walletTransaction.execute();
+
+    // then
+    assertThat(executeResult).isFalse();
+    assertThat(walletTransaction.getStatus()).isEqualTo(STATUS.EXPIRED);
+  }
+
+  @Test
+  void should_return_false_when_execute_with_move_money_failed()
+      throws InvalidTransactionException, NoSuchFieldException, IllegalAccessException {
+    // given
+    String preAssignedId = "t_" + UUID.randomUUID().toString();
+    Long buyerId = 111L;
+    Long sellerId = 111L;
+    Long productId = 111L;
+    String orderId = UUID.randomUUID().toString();
+    Double amount = 11.1;
+    WalletTransaction walletTransaction =
+        new WalletTransaction(preAssignedId, buyerId, sellerId, productId, orderId, amount);
+
+    given(distributedLock.lock(preAssignedId)).willReturn(true);
+    given(walletService.moveMoney(preAssignedId, buyerId, sellerId, amount))
+        .willReturn(null);
+
+    walletTransaction.setDistributedLock(distributedLock);
+    walletTransaction.setWalletService(walletService);
+
+    // when
+    boolean executeResult = walletTransaction.execute();
+
+    // then
+    assertThat(executeResult).isFalse();
+    assertThat(walletTransaction.getStatus()).isEqualTo(STATUS.FAILED);
+  }
 }
