@@ -28,15 +28,13 @@ public class WalletTransactionTest {
     String preAssignedId = "t_" + UUID.randomUUID().toString();
     Long buyerId = 111L;
     Long sellerId = 111L;
-    Long productId = 111L;
-    String orderId = UUID.randomUUID().toString();
     Double amount = 11.1;
+    WalletTransaction walletTransaction =
+        new WalletTransaction(preAssignedId, buyerId, sellerId, amount);
+
     given(distributedLock.lock(preAssignedId)).willReturn(true);
     given(walletService.moveMoney(preAssignedId, buyerId, sellerId, amount))
         .willReturn(UUID.randomUUID().toString());
-
-    WalletTransaction walletTransaction =
-        new WalletTransaction(preAssignedId, buyerId, sellerId, productId, orderId, amount);
     walletTransaction.setDistributedLock(distributedLock);
     walletTransaction.setWalletService(walletService);
 
@@ -53,11 +51,9 @@ public class WalletTransactionTest {
     String preAssignedId = "t_" + UUID.randomUUID().toString();
     Long buyerId = null;
     Long sellerId = 111L;
-    Long productId = 111L;
-    String orderId = UUID.randomUUID().toString();
     Double amount = 11.1;
     WalletTransaction walletTransaction =
-        new WalletTransaction(preAssignedId, buyerId, sellerId, productId, orderId, amount);
+        new WalletTransaction(preAssignedId, buyerId, sellerId,amount);
 
     // when then
     assertThatExceptionOfType(InvalidTransactionException.class)
@@ -70,11 +66,9 @@ public class WalletTransactionTest {
     String preAssignedId = "t_" + UUID.randomUUID().toString();
     Long buyerId = 111L;
     Long sellerId = null;
-    Long productId = 111L;
-    String orderId = UUID.randomUUID().toString();
     Double amount = 11.1;
     WalletTransaction walletTransaction =
-        new WalletTransaction(preAssignedId, buyerId, sellerId, productId, orderId, amount);
+        new WalletTransaction(preAssignedId, buyerId, sellerId, amount);
 
     // when then
     assertThatExceptionOfType(InvalidTransactionException.class)
@@ -87,11 +81,9 @@ public class WalletTransactionTest {
     String preAssignedId = "t_" + UUID.randomUUID().toString();
     Long buyerId = 111L;
     Long sellerId = 111L;
-    Long productId = 111L;
-    String orderId = UUID.randomUUID().toString();
     Double amount = -11.1;
     WalletTransaction walletTransaction =
-        new WalletTransaction(preAssignedId, buyerId, sellerId, productId, orderId, amount);
+        new WalletTransaction(preAssignedId, buyerId, sellerId, amount);
 
     // when then
     assertThatExceptionOfType(InvalidTransactionException.class)
@@ -99,21 +91,19 @@ public class WalletTransactionTest {
   }
 
   @Test
-  void should_return_true_when_execute_with_status_is_already_execute() throws InvalidTransactionException {
+  void should_return_true_when_execute_with_status_is_already_execute()
+      throws InvalidTransactionException {
     // given
     String preAssignedId = "t_" + UUID.randomUUID().toString();
     Long buyerId = 111L;
     Long sellerId = 111L;
-    Long productId = 111L;
-    String orderId = UUID.randomUUID().toString();
     Double amount = 11.1;
+    WalletTransaction walletTransaction =
+        new WalletTransaction(preAssignedId, buyerId, sellerId, amount);
 
     given(distributedLock.lock(preAssignedId)).willReturn(true);
     given(walletService.moveMoney(preAssignedId, buyerId, sellerId, amount))
         .willReturn(UUID.randomUUID().toString());
-
-    WalletTransaction walletTransaction =
-        new WalletTransaction(preAssignedId, buyerId, sellerId, productId, orderId, amount);
     walletTransaction.setDistributedLock(distributedLock);
     walletTransaction.setWalletService(walletService);
     walletTransaction.execute();
@@ -126,16 +116,15 @@ public class WalletTransactionTest {
   }
 
   @Test
-  void should_return_false_when_transaction_distributed_lock_is_not_locked() throws InvalidTransactionException {
+  void should_return_false_when_transaction_distributed_lock_is_not_locked()
+      throws InvalidTransactionException {
     // given
     String preAssignedId = "t_" + UUID.randomUUID().toString();
     Long buyerId = 111L;
     Long sellerId = 111L;
-    Long productId = 111L;
-    String orderId = UUID.randomUUID().toString();
     Double amount = 11.1;
     WalletTransaction walletTransaction =
-        new WalletTransaction(preAssignedId, buyerId, sellerId, productId, orderId, amount);
+        new WalletTransaction(preAssignedId, buyerId, sellerId, amount);
 
     given(distributedLock.lock(preAssignedId)).willReturn(false);
     walletTransaction.setDistributedLock(distributedLock);
@@ -154,11 +143,9 @@ public class WalletTransactionTest {
     String preAssignedId = "t_" + UUID.randomUUID().toString();
     Long buyerId = 111L;
     Long sellerId = 111L;
-    Long productId = 111L;
-    String orderId = UUID.randomUUID().toString();
     Double amount = 11.1;
     WalletTransaction walletTransaction =
-        new WalletTransaction(preAssignedId, buyerId, sellerId, productId, orderId, amount);
+        new WalletTransaction(preAssignedId, buyerId, sellerId, amount);
     given(distributedLock.lock(preAssignedId)).willReturn(true);
 
     walletTransaction.setDistributedLock(distributedLock);
@@ -179,11 +166,9 @@ public class WalletTransactionTest {
     String preAssignedId = "t_" + UUID.randomUUID().toString();
     Long buyerId = 111L;
     Long sellerId = 111L;
-    Long productId = 111L;
-    String orderId = UUID.randomUUID().toString();
     Double amount = 11.1;
     WalletTransaction walletTransaction =
-        new WalletTransaction(preAssignedId, buyerId, sellerId, productId, orderId, amount);
+        new WalletTransaction(preAssignedId, buyerId, sellerId, amount);
 
     given(distributedLock.lock(preAssignedId)).willReturn(true);
     given(walletService.moveMoney(preAssignedId, buyerId, sellerId, amount))
