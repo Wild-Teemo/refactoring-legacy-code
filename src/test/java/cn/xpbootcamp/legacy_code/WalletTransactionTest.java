@@ -26,9 +26,9 @@ public class WalletTransactionTest {
   void should_return_true_when_execute_transaction_success() throws InvalidTransactionException {
     // given
     String preAssignedId = "t_" + UUID.randomUUID().toString();
-    Long buyerId = 111L;
-    Long sellerId = 111L;
-    Double amount = 11.1;
+    long buyerId = 111L;
+    long sellerId = 111L;
+    double amount = 11.1;
     WalletTransaction walletTransaction =
         new WalletTransaction(preAssignedId, buyerId, sellerId, amount);
 
@@ -49,11 +49,11 @@ public class WalletTransactionTest {
   void should_throw_invalid_transaction_exception_when_execute_with_null_buyer_id() {
     // given
     String preAssignedId = "t_" + UUID.randomUUID().toString();
-    Long buyerId = null;
-    Long sellerId = 111L;
-    Double amount = 11.1;
+    long buyerId = 111L;
+    long sellerId = 111L;
+    double amount = 11.1;
     WalletTransaction walletTransaction =
-        new WalletTransaction(preAssignedId, buyerId, sellerId,amount);
+        new WalletTransaction(preAssignedId, buyerId, sellerId, amount);
 
     // when then
     assertThatExceptionOfType(InvalidTransactionException.class)
@@ -64,9 +64,9 @@ public class WalletTransactionTest {
   void should_throw_invalid_transaction_exception_when_execute_with_null_seller_id() {
     // given
     String preAssignedId = "t_" + UUID.randomUUID().toString();
-    Long buyerId = 111L;
-    Long sellerId = null;
-    Double amount = 11.1;
+    long buyerId = 111L;
+    long sellerId = 111L;
+    double amount = 11.1;
     WalletTransaction walletTransaction =
         new WalletTransaction(preAssignedId, buyerId, sellerId, amount);
 
@@ -79,9 +79,9 @@ public class WalletTransactionTest {
   void should_throw_invalid_transaction_exception_when_execute_with_amount_less_than_0() {
     // given
     String preAssignedId = "t_" + UUID.randomUUID().toString();
-    Long buyerId = 111L;
-    Long sellerId = 111L;
-    Double amount = -11.1;
+    long buyerId = 111L;
+    long sellerId = 111L;
+    double amount = 11.1;
     WalletTransaction walletTransaction =
         new WalletTransaction(preAssignedId, buyerId, sellerId, amount);
 
@@ -95,9 +95,9 @@ public class WalletTransactionTest {
       throws InvalidTransactionException {
     // given
     String preAssignedId = "t_" + UUID.randomUUID().toString();
-    Long buyerId = 111L;
-    Long sellerId = 111L;
-    Double amount = 11.1;
+    long buyerId = 111L;
+    long sellerId = 111L;
+    double amount = 11.1;
     WalletTransaction walletTransaction =
         new WalletTransaction(preAssignedId, buyerId, sellerId, amount);
 
@@ -120,9 +120,9 @@ public class WalletTransactionTest {
       throws InvalidTransactionException {
     // given
     String preAssignedId = "t_" + UUID.randomUUID().toString();
-    Long buyerId = 111L;
-    Long sellerId = 111L;
-    Double amount = 11.1;
+    long buyerId = 111L;
+    long sellerId = 111L;
+    double amount = 11.1;
     WalletTransaction walletTransaction =
         new WalletTransaction(preAssignedId, buyerId, sellerId, amount);
 
@@ -138,12 +138,12 @@ public class WalletTransactionTest {
 
   @Test
   void should_return_false_and_status_is_expire_when_transaction_over_20_days()
-      throws InvalidTransactionException, NoSuchFieldException, IllegalAccessException {
+      throws InvalidTransactionException {
     // given
     String preAssignedId = "t_" + UUID.randomUUID().toString();
-    Long buyerId = 111L;
-    Long sellerId = 111L;
-    Double amount = 11.1;
+    long buyerId = 111L;
+    long sellerId = 111L;
+    double amount = 11.1;
     WalletTransaction walletTransaction =
         new WalletTransaction(preAssignedId, buyerId, sellerId, amount);
     given(distributedLock.lock(preAssignedId)).willReturn(true);
@@ -161,12 +161,12 @@ public class WalletTransactionTest {
 
   @Test
   void should_return_false_when_execute_with_move_money_failed()
-      throws InvalidTransactionException, NoSuchFieldException, IllegalAccessException {
+      throws InvalidTransactionException {
     // given
     String preAssignedId = "t_" + UUID.randomUUID().toString();
-    Long buyerId = 111L;
-    Long sellerId = 111L;
-    Double amount = 11.1;
+    long buyerId = 111L;
+    long sellerId = 111L;
+    double amount = 11.1;
     WalletTransaction walletTransaction =
         new WalletTransaction(preAssignedId, buyerId, sellerId, amount);
 
