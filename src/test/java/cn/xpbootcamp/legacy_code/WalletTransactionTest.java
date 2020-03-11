@@ -49,15 +49,15 @@ public class WalletTransactionTest {
   void should_throw_invalid_transaction_exception_when_execute_with_null_buyer_id() {
     // given
     String preAssignedId = "t_" + UUID.randomUUID().toString();
-    long buyerId = 111L;
     long sellerId = 111L;
     double amount = 11.1;
     WalletTransaction walletTransaction =
-        new WalletTransaction(preAssignedId, buyerId, sellerId, amount);
+        new WalletTransaction(preAssignedId, null, sellerId, amount);
 
     // when then
     assertThatExceptionOfType(InvalidTransactionException.class)
-        .isThrownBy(walletTransaction::execute);
+        .isThrownBy(walletTransaction::execute)
+        .withMessage("This is an invalid transaction");
   }
 
   @Test
@@ -65,14 +65,15 @@ public class WalletTransactionTest {
     // given
     String preAssignedId = "t_" + UUID.randomUUID().toString();
     long buyerId = 111L;
-    long sellerId = 111L;
     double amount = 11.1;
     WalletTransaction walletTransaction =
-        new WalletTransaction(preAssignedId, buyerId, sellerId, amount);
+        new WalletTransaction(preAssignedId, buyerId, null, amount);
 
     // when then
     assertThatExceptionOfType(InvalidTransactionException.class)
-        .isThrownBy(walletTransaction::execute);
+        .isThrownBy(walletTransaction::execute)
+        .withMessage("This is an invalid transaction");
+
   }
 
   @Test
@@ -81,13 +82,14 @@ public class WalletTransactionTest {
     String preAssignedId = "t_" + UUID.randomUUID().toString();
     long buyerId = 111L;
     long sellerId = 111L;
-    double amount = 11.1;
+    double amount = -11.1;
     WalletTransaction walletTransaction =
         new WalletTransaction(preAssignedId, buyerId, sellerId, amount);
 
     // when then
     assertThatExceptionOfType(InvalidTransactionException.class)
-        .isThrownBy(walletTransaction::execute);
+        .isThrownBy(walletTransaction::execute)
+        .withMessage("This is an invalid transaction");
   }
 
   @Test
