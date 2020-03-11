@@ -1,6 +1,7 @@
 package cn.xpbootcamp.legacy_code;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatExceptionOfType;
 import static org.mockito.BDDMockito.given;
 
 import cn.xpbootcamp.legacy_code.service.WalletService;
@@ -44,4 +45,56 @@ public class WalletTransactionTest {
     // then
     assertThat(executeResult).isTrue();
   }
+
+  @Test
+  void should_throw_invalid_transaction_exception_when_execute_with_null_buyer_id() {
+    // given
+    String preAssignedId = "t_" + UUID.randomUUID().toString();
+    Long buyerId = null;
+    Long sellerId = 111L;
+    Long productId = 111L;
+    String orderId = UUID.randomUUID().toString();
+    Double amount = 11.1;
+    WalletTransaction walletTransaction =
+        new WalletTransaction(preAssignedId, buyerId, sellerId, productId, orderId, amount);
+
+    // when then
+    assertThatExceptionOfType(InvalidTransactionException.class)
+        .isThrownBy(walletTransaction::execute);
+  }
+
+  @Test
+  void should_throw_invalid_transaction_exception_when_execute_with_null_seller_id() {
+    // given
+    String preAssignedId = "t_" + UUID.randomUUID().toString();
+    Long buyerId = 111L;
+    Long sellerId = null;
+    Long productId = 111L;
+    String orderId = UUID.randomUUID().toString();
+    Double amount = 11.1;
+    WalletTransaction walletTransaction =
+        new WalletTransaction(preAssignedId, buyerId, sellerId, productId, orderId, amount);
+
+    // when then
+    assertThatExceptionOfType(InvalidTransactionException.class)
+        .isThrownBy(walletTransaction::execute);
+  }
+
+  @Test
+  void should_throw_invalid_transaction_exception_when_execute_with_amount_less_than_0() {
+    // given
+    String preAssignedId = "t_" + UUID.randomUUID().toString();
+    Long buyerId = 111L;
+    Long sellerId = 111L;
+    Long productId = 111L;
+    String orderId = UUID.randomUUID().toString();
+    Double amount = -11.1;
+    WalletTransaction walletTransaction =
+        new WalletTransaction(preAssignedId, buyerId, sellerId, productId, orderId, amount);
+
+    // when then
+    assertThatExceptionOfType(InvalidTransactionException.class)
+        .isThrownBy(walletTransaction::execute);
+  }
+
 }
