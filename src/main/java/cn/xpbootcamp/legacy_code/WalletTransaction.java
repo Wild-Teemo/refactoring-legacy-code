@@ -7,7 +7,7 @@ import cn.xpbootcamp.legacy_code.utils.IdGenerator;
 import javax.transaction.InvalidTransactionException;
 
 public class WalletTransaction {
-
+  private static final long MAX_EXPIRED_MILLISECOND = 1728000000;
   private String id;
   private Long buyerId;
   private Long sellerId;
@@ -44,16 +44,13 @@ public class WalletTransaction {
   }
 
   public boolean execute() throws InvalidTransactionException {
-    if (buyerId == null || (sellerId == null || amount < 0.0)) {
-      throw new InvalidTransactionException("This is an invalid transaction");
-    }
-    if (status == STATUS.EXECUTED) {
+    validateOrder();
+    if (isExecuted()) {
       return true;
     }
     boolean isLocked = false;
     try {
       isLocked = distributedLock.lock(id);
-      ;
 
       // 锁定未成功，返回false
       if (!isLocked) {
@@ -62,20 +59,14 @@ public class WalletTransaction {
       if (status == STATUS.EXECUTED) {
         return true; // double check
       }
-      long executionInvokedTimestamp = System.currentTimeMillis();
-      // 交易超过20天
-      if (executionInvokedTimestamp - createdTimestamp > 1728000000) {
+      if (isExpired()) {
         this.status = STATUS.EXPIRED;
         return false;
       }
+
       String walletTransactionId = walletService.moveMoney(id, buyerId, sellerId, amount);
-      if (walletTransactionId != null) {
-        this.status = STATUS.EXECUTED;
-        return true;
-      } else {
-        this.status = STATUS.FAILED;
-        return false;
-      }
+      status = walletTransactionId != null ? STATUS.EXECUTED : STATUS.FAILED;
+      return STATUS.EXECUTED == status;
     } finally {
       if (isLocked) {
         distributedLock.unlock(id);
@@ -91,5 +82,18 @@ public class WalletTransaction {
     this.walletService = walletService;
   }
 
+  private void validateOrder() throws InvalidTransactionException {
+    if (buyerId == null || (sellerId == null || amount < 0.0)) {
+      throw new InvalidTransactionException("This is an invalid transaction");
+    }
+  }
+
+  private boolean isExecuted() {
+    return status == STATUS.EXECUTED;
+  }
+
+  private boolean isExpired() {
+    return System.currentTimeMillis() - createdTimestamp > MAX_EXPIRED_MILLISECOND;
+  }
 
 }
